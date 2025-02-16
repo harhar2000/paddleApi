@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Paddle Checkout</title>
+    <meta charset="UTF-8" />
+
+    <!-- Load Paddle.js library to handle checkout -->
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
+    <!-- Load the Paddle token from the backend -->
+    <script src="http://localhost:5000/config.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      document.addEventListener("DOMContentLoaded", function () {
+        Paddle.Environment.set("sandbox"); // Use Sandbox mode for testing
+
+        // Ensure the Paddle token is available before initializing
+        if (typeof PADDLE_CLIENT_TOKEN !== "undefined") {
+          Paddle.Initialize({
+            token: PADDLE_CLIENT_TOKEN, // Use the imported token from config.js
+          });
+          console.log("Paddle initialized with token:", PADDLE_CLIENT_TOKEN);
+        } else {
+          console.error(
+            "Paddle token not found. Make sure the backend is running."
+          );
+        }
+      });
+
+      // Function to open Paddle checkout
+      function openCheckout(items) {
+        Paddle.Checkout.open({
+          items: items, // Pass items to checkout
+        });
+      }
+    </script>
+
+    <div>
+      <a
+        href="#"
+        onclick='openCheckout([{ "priceId": "pri_01hrswc94vcn3ye84q0q0j3rdw" }])'
+      >
+        Checkout here!
+      </a>
+    </div>
+  </body>
+</html>
