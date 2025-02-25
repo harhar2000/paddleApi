@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Harry's Pricing page</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <style>
+      body {
+        background-color: #121212;
+        color: #252525;
+      }
+      .pricing-page-container {
+        max-width: 900px;
+        margin: auto;
+        text-align: center;
+        margin-top: 2em;
+        padding-left: 1em;
+        padding-right: 1em;
+      }
+      .pricing-grid {
+        display: block;
+        margin-bottom: 1em;
+      }
+      .pricing-grid .starter-plan {
+        background-color: AliceBlue;
+      }
+      .pricing-grid .pro-plan {
+        background-color: HoneyDew;
+      }
+      .pricing-grid .enterprise-plan {
+        background-color: LavenderBlush;
+      }
+      .pricing-grid > * {
+        padding: 1rem;
+      }
+      .pricing-grid button {
+        background-color: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+      }
+
+      .pricing-grid button:hover {
+        background-color: #ff4b4b;
+      }
+
+      @media (min-width: 768px) {
+        .pricing-grid {
+          display: grid;
+          grid-auto-rows: 1fr;
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+      }
+    </style>
+    <!-- MVP.css: https://andybrewer.github.io/mvp/ -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/mvp.css@1.12.0/mvp.css"
+      media="print"
+      onload="this.media='all'; document.body.classList.add('dark-mode');"
+    />
+  </head>
+  <body onLoad="getPrices(billingCycle)">
+    <div class="pricing-page-container">
+      <h1>Choose your plan</h1>
+      <div class="pricing-toggle">
+        <input
+          type="radio"
+          name="plan"
+          value="month"
+          id="month"
+          onclick="getPrices('month')"
+        /><label for="month">Monthly</label>
+        <input
+          type="radio"
+          name="plan"
+          value="year"
+          id="year"
+          onclick="getPrices('year')"
+          checked
+        /><label for="year">Yearly <sup>save 20%</sup></label>
+      </div>
+      <div class="pricing-grid">
+        <div class="starter-plan">
+          <h3>Starter</h3>
+          <p id="starter-price">$100.00</p>
+          <p><small>per user</small></p>
+          <button
+            class="checkout-button"
+            data-theme="dark"
+            data-locale="en"
+            data-allow-logout="false"
+            data-items='[{ "priceId": "pri_01jmfe3r1bbmsr9jrxyxtsjd9y", "quantity": 1 }
+  ]'
+          >
+            Sign up now
+          </button>
+        </div>
+        <div class="pro-plan">
+          <h3>Pro</h3>
+          <p id="pro-price">$300.00</p>
+          <p><small>per user</small></p>
+          <button
+            class="checkout-button"
+            data-theme="dark"
+            data-locale="en"
+            data-allow-logout="false"
+            data-items='[
+        { "priceId": "pri_01jmfeakjwsgqxv8yqz4rhkjzd", "quantity": 1 }
+      ]'
+          >
+            Sign up now
+          </button>
+        </div>
+        <div class="enterprise-plan">
+          <h3>Enterprise</h3>
+          <p>Contact us</p>
+          <p><small>bespoke pricing</small></p>
+          <button onclick="window.location.href='contact.html'">
+            Inquire now
+          </button>
+        </div>
+      </div>
+
+      <div class="country-selector">
+        <select name="country" id="country" autocomplete="off">
+          <option value="GB">🇬🇧 United Kingdom</option>
+          <option value="US">🇺🇸 United States</option>
+          <option value="ES">🇪🇸 Spain</option>
+          <option value="IN">🇮🇳 India</option>
+          <option value="US">🌍 Other</option>
+        </select>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    Paddle.Environment.set("sandbox");
+    Paddle.Initialize({
+      token: PADDLE_CLIENT_TOKEN, // Client-side  - find in .env or https://sandbox-vendors.paddle.com/products-v2
+      pwCustomer: {},
+      checkout: {
+        settings: {
+          displayMode: "inline",
+          frameTarget: "checkout-container",
+          frameInitialHeight: "450",
+          frameStyle:
+            "width: 100%; min-width: 312px; background-color: transparent; border: none;",
+          theme: "dark",
+          locale: "en",
+          allowLogout: false,
+        },
+      },
+    });
+
+    // define products and prices
+    var starterProduct = "pro_01jmfajb9f0s01tj7dcvjy31mr";
+    var proProduct = "pro_01jmfe5y970sx4zkxwd28jfjv1";
+    var monthItems = [
+      {
+        quantity: 1,
+        priceId: "pri_01jmfe2qxgyab5wnd76pdw0gm1",
+      },
+      {
+        quantity: 1,
+        priceId: "pri_01jmfe9eys1g2957npa8xyrvat",
+      },
+    ];
+    var yearItems = [
+      {
+        quantity: 1,
+        priceId: "pri_01jmfe3r1bbmsr9jrxyxtsjd9y",
+      },
+      {
+        quantity: 1,
+        priceId: "pri_01jmfeakjwsgqxv8yqz4rhkjzd",
+      },
+    ];
+
+    var starterPriceLabel = document.getElementById("starter-price");
+    var proPriceLabel = document.getElementById("pro-price");
+
+    var billingCycle = "year";
+    var billingCountry = "GB";
+
+    // choose country
+    var dropdown = document.getElementById("country");
+    dropdown.addEventListener("change", function () {
+      billingCountry = dropdown.value;
+      console.log("country changed: " + billingCountry);
+      var plan = document.querySelector("input[type=radio][name=plan]:checked");
+      getPrices(plan.value);
+    });
+
+    function getPrices(cycle) {
+      var itemsList = cycle === "month" ? monthItems : yearItems;
+
+      //var billingCycle = cycle;
+      var request = {
+        items: itemsList,
+        address: {
+          countryCode: billingCountry,
+        },
+      };
+
+      console.log(cycle);
+
+      Paddle.PricePreview(request)
+        .then((result) => {
+          console.log("Price preview response: ", result);
+
+          var items = result.data.details.lineItems;
+          for (let item of items) {
+            if (item.product.id === starterProduct) {
+              starterPriceLabel.innerHTML = item.formattedTotals.subtotal;
+              console.log(
+                "Starter price updated: " + item.formattedTotals.subtotal
+              );
+            } else if (item.product.id === proProduct) {
+              proPriceLabel.innerHTML = item.formattedTotals.subtotal;
+              console.log(
+                "Pro price updated: " + item.formattedTotals.subtotal
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching prices: ", error);
+        });
+    }
+  </script>
+</html>

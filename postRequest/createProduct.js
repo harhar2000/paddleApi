@@ -4,11 +4,22 @@ dotenv.config();
 const PADDLE_API_KEY = process.env.PADDLE_API_KEY;
 export { PADDLE_API_KEY };
 
+// Make connection - 200
+const response = await fetch("https://sandbox-api.paddle.com/products", {
+  method: "GET",
+  headers: {
+    Authorization: `Bearer ${PADDLE_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+});
+console.log(response);
+
+// Payload for POST request
 const payload = {
   name: "AeroEdit Student",
   tax_category: "standard",
   description:
-    "Essential tools for student pilots to manage flight logs, analyze performance, and plan routes, and ensure compliance. Valid student pilot certificate from the FAA required.",
+    "Essential tools for student pilots to manage flight logs, analyze performance and plan routes and ensure compliance. Valid student pilot certificate from the FAA required.",
   image_url:
     "https://paddle.s3.amazonaws.com/user/165798/bT1XUOJAQhOUxGs83cbk_pro.png",
   custom_data: {
@@ -28,7 +39,7 @@ const payload = {
   },
 };
 
-const response = await fetch("https://sandbox-api.paddle.com/products", {
+const response2 = await fetch("https://sandbox-api.paddle.com/products", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -36,10 +47,4 @@ const response = await fetch("https://sandbox-api.paddle.com/products", {
   },
   body: JSON.stringify(payload),
 });
-console.log(response);
-
-// const response = await fetch("https://sandbox-api.paddle.com/customers", {
-//   method: "GET",
-//   headers: { Authorization: `${PADDLE_API_KEY}` },
-// });
-// console.log(response);
+console.log(response2);
